@@ -1,0 +1,56 @@
+STORAGE AND LINUX PARTITION
+
+•	Partitioning –
+Disk Partitioning is the process of breaking up a storage drive into smaller usable units, often known as partitions, on which the user can work separately. 
+It is one step of disk formatting. 
+If a partition is created, the disk will store the information about the location and size of partitions in the partition table. 
+With the partition table, each partition can appear to the operating system as a logical disk, and users can read and write data on those disks. 
+The main advantage of disk partitioning is that each partition can be managed separately.
+BIOS and UFI are to types of chips for the motherboard. MBR method is used for BIOS and GPT method is used for UFI.
+
+•	Partition Table-
+There are main two types of partition table:- MBR and GPT.
+
+1.	MBR – 
+MBR is a special boot sector located at the beginning of a drive. 
+This sector contains a boot loader for the installed operating system and information about the drive’s logical partitions. 
+The boot loader is a small bit of code that generally loads the larger boot loader from another partition on a drive.
+MBR does have its limitations. For starters, MBR only works with disks up to 2 TB in size. 
+MBR also only supports up to four primary partitions if you want more, you have to make one of your primary partitions an “extended partition” and create logical partitions inside it. MBR have maximum 26 partitions.
+MBR had no way of knowing if its data was corrupted you’d only see there was a problem when the boot process failed or your drive’s partitions vanished.
+
+2.	GPT-
+GPT is called as GUID Partition Table because every partition on your drive has a “globally unique identifier” or GUID a random string so long that every GPT partition on earth likely has its own unique identifier.
+GPT doesn’t suffer from MBR’s limits. 
+GPT-based drives can be much larger, with size limits dependent on the operating system and its file systems. 
+GPT also allows for a nearly unlimited number of partitions. Maximum size for this is nearly 10TB and it has maximum 126 partitions.
+On an MBR disk, the partitioning and boot data is stored in one place. If this data is overwritten or corrupted, you’re in trouble. 
+In contrast, GPT stores multiple copies of this data across the disk, so it’s much more robust and can recover if the data is corrupted.
+GPT also stores cyclic redundancy check (CRC) values to check that its data is intact. If the data is corrupted, GPT can notice the problem and attempt to recover the damaged data from another location on the disk. After extended partition, at the end GPT have backup of data to get the data.
+
+•	Steps to create partitioning and Commands –
+
+1.	list partitions.
+Command- parted -l
+2.	label a partition.
+Command- parted /dev/vdb mklabel msdos
+3.	Use mkpart to make a partition.
+Command - mkpart
+4.	let the partition be created/settle.
+Command-  udevadm settle                         
+5.	Attach the file system to the partition.
+Command - mkfs.xfs /dev/vdb1
+6.	Create a Mount point directory.
+Command – mkdir/archive
+7.	Add entry in fstab.
+Command – cat/etc/fstab
+          lsblk/dev/vdb
+          lsblk --fs/dev/vdb
+	        vi/etc/fstab 
+8.	Systemctl daemon-reload.
+9.	Mount the partition on the directory.
+Command- mount/archive
+10.	Reboot.
+Command- df -h
+
+	
