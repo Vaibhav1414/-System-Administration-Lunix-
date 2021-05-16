@@ -1,0 +1,50 @@
+LVM
+LVM stands for Logical Volume Management. It is a system of managing logical volumes, or filesystems, that is much more advanced and flexible than the traditional method of partitioning a disk into one or more segments and formatting that partition with a filesystem.
+In Linux, Logical Volume Manager (LVM) is a device mapper framework that provides logical volume management for the Linux kernel. Most modern Linux distributions are LVM-aware to the point of being able to have their root file systems on a logical volume.
+
+LVM have 3 concepts
+•	Physical Volume (PV): it is a whole disk or a partition of a disk
+•	Volume Group (VG): corresponds to one or more PV
+•	Logical Volume (LV): represents a portion of a VG. A LV can only belong to one VG. It’s on a LV that we can create a file system.
+
+Commands for the LVM are as following:
+1.pvcreate => to create a physical volume
+2.pvdisplay => to display the physical volume
+3.vgcreate vgname[pv] => to create a volume group
+4.vgdisplay => to display the volume group
+5.lvcreate -n name -L[size] name =>to create a logical volume
+6.lvdisplay => to display the logical volume
+
+How to setup Linux LVM ?
+1.	Login with root user ID
+2.	Using the whole new hard disk for LVM partition:
+    fdisk /dev/xvdf
+3.	Follow This Steps!
+4.	At the Linux fdisk command prompt,
+1.	press n to create a new disk partition,
+2.	press p to create a primary disk partition,
+3.	press 1 to denote it as 1st disk partition,
+4.	press ENTER twice to accept the default of 1st and last cylinder – to convert the whole   
+    secondary hard disk to a single disk partition,
+5.	press t (will automatically select the only partition – partition 1) to change the default  
+    Linux partition type (0x83) to LVM partition type (0x8e),
+6.	press L to list all the currently supported partition type,
+7.	press 8e (as per the L listing) to change partition 1 to 8e, i.e. Linux LVM partition type,
+8.	press p to display the secondary hard disk partition setup. Please take note that the first 
+    partition is denoted as /dev/hdb1 in Linux,
+9.	press w to write the partition table and exit fdisk upon completion.
+5.	Next, this LVM command will create a LVM physical volume (PV) on a regular hard disk or partition:
+    pvcreate /dev/xvdf1
+6.	Now, another LVM command to create a LVM volume group (VG) called vg0 with a physical extent size (PE size) of 16MB:
+    vgcreate -s 16M vg0 /dev/xvdf1
+7.	Create a 400MB logical volume (LV) called lvol0 on volume group vg0:
+     lvcreate -L 400M -n lvol0 vg0This lvcreate command will create a softlink /dev/vg0/lvol0 point to a correspondence block device file called /dev/mapper/vg0-lvol0.
+8.	The Linux LVM setup is almost done. Now is the time to format logical volume lvol0 to create a Red Hat Linux supported file system, i.e. EXT3 file system, with 1% reserved block count:
+    mkfs -t ext3 -m 1 -v /dev/mapper/vg0-lvol0
+9.	Create a mount point before mounting the new EXT3 file system:
+    mkdir /mnt/vfs
+10.	The last step of this LVM tutorial – mount the new EXT3 file system created on logical volume lvol0 of LVM to /mnt/vfs mount point:
+    mount -t ext4 /dev/mapper/vg0-lvol0 /mnt/vfs
+11.	To confirm the LVM setup has been completed successfully, the df -h command should display these similar message:
+    /dev/mapper/vg0-lvol0 388M 11M 374M 3% /mnt/vfs
+     
